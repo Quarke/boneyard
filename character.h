@@ -3,37 +3,31 @@
 #define CHARACTER_H
 
 #include <string>
-#include "hand.h"
-#include "feet.h"
 #include "bag.h"
 
 class Character {
 private:
   std::string name;
+  std::string equipped;
 
-  Hand left_hand;
-  Hand right_hand;
-
-  Feet feet;
+  std::string boots;
 
   Bag bag;
-
-  std::string equipped;
 
 public:
   Character(const std::string name);
 
   std::string getName();
   std::string getEquipped();
+  std::string getBoots();
 
-  Hand getLeftHand();
-  Hand getRightHand();
-  Feet getFeet();
+  void setName(const std::string n);
+  void setEquipped(const std::string e);
+  void setBoots(const std::string b);
+
+  void print();
+
   Bag getBag();
-
-  void setName(const std::string name);
-
-  void print() const;
 
 };
 
