@@ -2,13 +2,15 @@
 #include <iostream>
 
 #include "character.h"
+#include "bag.h"
 
 using namespace std;
 
-Character::Character(string n): left_hand("left"), right_hand("right"), feet(), bag("basic backpack") {   // Must use member initializer list to construct object
-   // Call setters to validate price and qtyInStock
+Character::Character(string n): bag("basic bag") {
    name = n;
    equipped = "Nothing";
+
+   boots = "basic boots";
 }
 
 string Character::getName() {
@@ -19,20 +21,8 @@ string Character::getEquipped() {
    return equipped;
 }
 
-Bag Character::getBag() {
-  return bag;
-}
-
-Hand Character::getLeftHand() {
-  return left_hand;
-}
-
-Hand Character::getRightHand() {
-  return right_hand;
-}
-
-Feet Character::getFeet() {
-  return feet;
+string Character::getBoots() {
+   return boots;
 }
 
 // Validate price, which shall be positive
@@ -40,8 +30,19 @@ void Character::setName(string new_name) {
    name = new_name;
 }
 
+void Character::setEquipped(string new_equipped) {
+   equipped = new_equipped;
+}
 
-// print in the format ""Character-name" by author-name (gender) at email"
-void Character::print() const {
-   cout << "'" << name << ", " << equipped << "' by " << endl;
+// Validate price, which shall be positive
+void Character::setBoots(string new_boots) {
+   name = new_boots;
+}
+
+void Character::print() {
+   cout << name << ", " << equipped << endl;
+}
+
+Bag Character::getBag() {
+  return bag;
 }

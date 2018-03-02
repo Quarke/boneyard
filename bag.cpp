@@ -5,12 +5,9 @@
 using namespace std;
 
 // Constructor, with member initializer list to initialize the
-Bag::Bag(std::string n) : capacity(10), contents() {   // Must use member initializer list to construct object
+Bag::Bag(std::string n) : contents(), capacity(10) {   // Must use member initializer list to construct object
    // Call setters to validate price and qtyInStock
    name = n;
-   count = 0;
-
-   usable = true;
 }
 
 
@@ -19,8 +16,8 @@ string Bag::getName() {
    return name;
 }
 
-string Bag::getContents() {
-  string rc = "";
+string Bag::getContents() const{
+  string rc = "Contents: ";
 
   for(string s : contents) {
     rc += s + ", ";
@@ -28,16 +25,12 @@ string Bag::getContents() {
   return rc;
 }
 
-int Bag::getCapacity() {
+unsigned long Bag::getCapacity() {
   return capacity;
 }
 
-int Bag::getCount() {
-  return count;
-}
-
-bool Bag::getUsable() {
-   return usable;
+unsigned long Bag::getSize() {
+  return contents.size();
 }
 
 // Setters
@@ -51,27 +44,23 @@ void Bag::setCapacity(size_t c) {
   }
 }
 
-void Bag::setUsable(bool b) {
-  usable = b;
-}
-
 //Modifiers
-int Bag::addContent(string item){
-  if( contents.size() < (size_t)capacity ){
-    auto rc = contents.insert(item);
-    count++;
-
-    return 1;
+void Bag::addContent(string item){
+  if( contents.size() < capacity ){
+    contents.insert(item);
   }
-
-  return -1;
 }
 
 string Bag::removeContent(string item) {
   contents.erase(item);
+  return item;
+}
+
+void Bag::removeAll() {
+  contents.clear();
 }
 
 // print in the format ""Bag-name" by author-name (gender) at email"
 void Bag::print() const {
-   cout << "'" << name << "' by " << endl;
+   cout << name << getContents() << endl;
 }

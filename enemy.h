@@ -1,20 +1,17 @@
-#ifndef ENEMY_H_H
+#ifndef ENEMY_H
 #define ENEMY_H
 
 #include <string>
-#include "hand.h"
-#include "feet.h"
-#include "bag.h"
 
 class Enemy{
 private:
   std::string name;
 
-  Ability power;
-  Kill kill_method;
+  std::string power;
+  std::string kill_method;
 
 public:
-  Enemy(const std::string name);
+  Enemy(const std::string name, std::string p, std::string k);
 
   std::string getName();
   std::string getAbility();

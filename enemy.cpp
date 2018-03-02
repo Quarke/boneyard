@@ -5,11 +5,10 @@
 
 using namespace std;
 
-Enemy::Enemy(string n, string power, string kill_method): ability(power),kill(kill_method) {   
+Enemy::Enemy(string n, string p, string k) {
    name = n;
-   ability = power; 
-   kill = kill_method; 
-   
+   power = p;
+   kill_method = k;
 }
 
 string Enemy::getName() {
@@ -17,25 +16,26 @@ string Enemy::getName() {
 }
 
 string Enemy::getAbility() {
-   return ability;
+   return power;
 }
 
-Bag Enemy::getKillMethod() {
-  return kill;
+string Enemy::getKillMethod() {
+  return kill_method;
 }
 
 void Enemy::setName(string new_name) {
    name = new_name;
 }
 
-void Enemy::setAbility(string new_ability)
-{
-    ability = new_ability; 
-    
+void Enemy::setAbility(string new_ability) {
+    power = new_ability;
 }
 
-void Enemy::setKillMethod(string new_killmethod)
-{
-    kill   = new_killmethod; 
-    
+void Enemy::setKillMethod(string new_killmethod) {
+    kill_method = new_killmethod;
+}
+
+// print in the format ""Bag-name" by author-name (gender) at email"
+void Enemy::print() const {
+   cout << name << ", " << power << ", " << kill_method << endl;
 }
