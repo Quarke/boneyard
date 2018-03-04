@@ -1,4 +1,4 @@
-/* Header for Foot class (Foot.h) */
+/* Header for Bag class (Bag.h) */
 #ifndef BAG_H
 #define BAG_H
 

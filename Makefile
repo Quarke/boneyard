@@ -8,6 +8,8 @@ CHARACTER_SHIT= character_test.o character.o bag.o
 BAG_SHIT= bag_test.o bag.o
 ENEMY_SHIT= enemy_test.o enemy.o
 
+all: boneyard
+
 character: $(CHARACTER_SHIT)
 	$(CPP) $(CPPFLAGS) $^ -o $@
 
@@ -20,8 +22,8 @@ enemy: $(ENEMY_SHIT)
 boneyard: $(OBJ)
 	$(CPP) -o $@ $^ $(LINKS)
 
-#	%.o: %.cpp
-#		$(CPP) -c $(CPPFLAGS) -o $@ $<
+%.o: %.cpp
+	$(CPP) -c $(CPPFLAGS) -o $@ $<
 
 clean:
-	rm character boneyard bag *.o
+	rm character boneyard bag enemy *.o

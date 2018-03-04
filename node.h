@@ -26,5 +26,7 @@ class Node {
                 std::string, std::string, std::string, std::string, std::vector<std::string>);
 
         Node();
-        ~Node();
+
+
+        void print();
 };

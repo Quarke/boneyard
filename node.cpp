@@ -1,12 +1,12 @@
 #include "node.h"
-
+#include <string>
+#include <iostream>
 
 Node::Node(){}
-Node::~Node(){}
 
 Node::Node(std::string ttl, std::string enterDesc, std::string nme, std::string en, std::string es,
         std::string ee, std::string ew, std::string one, std::string onl, std::string e1,
-        std::string e2, std::string e3, std::vector<std::string> objs){
+        std::string e2, std::string e3, std::vector<std::string> objs) {
 
     this->title = ttl;
     this->enterDescription = enterDesc;;
@@ -21,4 +21,9 @@ Node::Node(std::string ttl, std::string enterDesc, std::string nme, std::string 
     this->extra2 = e2;
     this->extra3 = e3;
     this->objects = objs;
+}
+
+
+void Node::print(){
+  std::cout << title << ", " << enterDescription << ", " << enemy << std::endl;
 }
