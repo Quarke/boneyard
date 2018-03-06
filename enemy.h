@@ -16,8 +16,8 @@ public:
   Enemy(const std::string name, int pdamage, int sdamage, int chealth, int mhealth);
 
   std::string getName();
-  int getDamage_Self();
-  int getDamage_Person();
+  int getSelfDamage();
+  int getPersonDamage();
   int getMaxHealth();
   int getCurrentHealth();
 
