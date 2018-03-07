@@ -1,0 +1,16 @@
+{
+	"Boss": {
+		"name": "Boss",
+		"health_CURRENT": "20",
+		"damage_person": "5",
+		"damage_self": "2",
+		"health_MAX": "20"
+	},
+	"enemy1": {
+		"name": "Zombot",
+		"health_CURRENT": "20",
+		"damage_person": "5",
+		"damage_self": "2",
+		"health_MAX": "20"
+	}
+}
