@@ -26,7 +26,7 @@ Node::Node(std::string ttl, std::string enterDesc, std::string nme, std::string 
 int Node::removeObject(std::string obj){
     for(size_t i=0; i < objects.size(); i++)
     if (objects.at(i).compare(obj) == 0){
-        objects.erase(objects.begin()+i);
+        objects.erase(objects.begin() + i);
         return 0;
     }
     return 1;
