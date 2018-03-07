@@ -110,9 +110,6 @@ void GameState::createNodeMap(){
   Json::Value obj;
   reader.parse(ifs, obj); // reader can also read strings
 
-  // Create an empty unordered_map and
-  GameState gameState;
-
   for(Json::Value::iterator i = obj.begin(); i !=obj.end(); ++i){
       Node n;
       Json::Value key = i.key();
