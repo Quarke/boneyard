@@ -4,10 +4,7 @@ LINKS= -lncurses -ljsoncpp
 OBJ= ncurses.o node.o gamestate.o
 GAMESTATE_SHIT= gamestate.o
 
-GAMESTATE_SHIT= gamestate.o
-BAG_SHIT= bag_test.o bag.o
 ENEMY_SHIT= enemy_test.o enemy.o
-#GAME_STATE_SHIT= gamestate_test.o game_state.o
 
 all: boneyard
 
