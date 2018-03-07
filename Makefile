@@ -11,9 +11,6 @@ all: boneyard
 gamestate: $(GAMESTATE_SHIT)
 	$(CPP) $(CPPFLAGS) $^ -o $@
 
-bag: $(BAG_SHIT)
-	$(CPP) $(CPPFLAGS) $^ -o $@
-
 enemy: $(ENEMY_SHIT)
 	$(CPP) $(CPPFLAGS) $^ -o $@
 

@@ -29,29 +29,10 @@ static unsigned long MAX_WIDTH = 150;
 //static std::string directions[4] = {"go north", "go south", "go east", "go west"};
 
 //solely so the compiler shuts the fuck up
-std::string getNextNode(std::string s, Node * n );
 void print_current_room(Node * n);
 void mvprintw_center(int row, int col, std::string msg);
 std::string suggest(std::string, Node * n);
 
-std::string  getNextNode(std::string direction, Node * n){
-    if(direction.compare("north") == 0){
-        return n->exitNorth;
-    }
-    else if(direction.compare("south") == 0){
-        return n->exitSouth;
-    }
-    else if(direction.compare("east") == 0){
-        return n->exitEast;
-    }
-    else if(direction.compare("west") == 0){
-        return n->exitWest;
-    }
-    else{
-        return "invalid";
-    }
-
-}
 
 void print_current_room(Node * n) {
   //print the title at top center
@@ -307,7 +288,7 @@ int main(void) {
             std::transform(first_token.begin(), first_token.end(), first_token.begin(), ::tolower);
             std::transform(second_token.begin(), second_token.end(), second_token.begin(), ::tolower);
             if(first_token.compare("go") == 0){
-                std::string next =  getNextNode(second_token, &n);
+                std::string next =  gameState.getNextNode(second_token, &n);
                 if(!(next.compare("invalid") == 0))
                     it = gameState.getNodeMap().find(next);
             }

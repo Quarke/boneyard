@@ -47,6 +47,25 @@ std::unordered_map<std::string, Node> GameState::getNodeMap(){
 
 }
 
+std::string GameState::getNextNode(std::string direction, Node * n){
+  if(direction.compare("north") == 0){
+      return n->exitNorth;
+  }
+  else if(direction.compare("south") == 0){
+      return n->exitSouth;
+  }
+  else if(direction.compare("east") == 0){
+      return n->exitEast;
+  }
+  else if(direction.compare("west") == 0){
+      return n->exitWest;
+  }
+  else{
+      return "invalid";
+  }
+
+}
+
 // End Getters
 
 // Setters

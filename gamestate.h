@@ -30,7 +30,7 @@ public:
   std::set<std::string> getItems();
   std::string getItem(std::string item);
   std::unordered_map<std::string, Node> getNodeMap();
-
+  std::string getNextNode(std::string, Node * n);
   //Setters
   void setName(const std::string n);
   void setEquipped(const std::string e);
