@@ -1,8 +1,6 @@
-#include <json/json.h>
 #include <curses.h>
 
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <string.h>
 #include <vector>
@@ -12,8 +10,10 @@
 #include <unistd.h>
 #include <locale>
 #include <sstream>
+#include <algorithm>
+#include <iterator>
 
-#include "node.h"
+#include "gamestate.h"
 
 using namespace std;
 
@@ -26,10 +26,32 @@ static struct coordinate west_exit;
 
 static unsigned long MAX_WIDTH = 150;
 
+//static std::string directions[4] = {"go north", "go south", "go east", "go west"};
+
 //solely so the compiler shuts the fuck up
+std::string getNextNode(std::string s, Node * n );
 void print_current_room(Node * n);
 void mvprintw_center(int row, int col, std::string msg);
 std::string suggest(std::string, Node * n);
+
+std::string  getNextNode(std::string direction, Node * n){
+    if(direction.compare("north") == 0){
+        return n->exitNorth;
+    }
+    else if(direction.compare("south") == 0){
+        return n->exitSouth;
+    }
+    else if(direction.compare("east") == 0){
+        return n->exitEast;
+    }
+    else if(direction.compare("west") == 0){
+        return n->exitWest;
+    }
+    else{
+        return "invalid";
+    }
+
+}
 
 void print_current_room(Node * n) {
   //print the title at top center
@@ -46,26 +68,17 @@ void print_current_room(Node * n) {
 
     if(strcmp(location.c_str(), "exitNorth") == 0) {
       if(!n->exitNorth.empty()) {
-        mvprintw_center(north_exit.row, north_exit.col, n->exitNorth);
-      }
-      else {
-          mvprintw(north_exit.row, north_exit.col, "X");
+        mvprintw_center(north_exit.row, north_exit.col, "North");
       }
     }
     else if(strcmp(location.c_str(), "exitSouth") == 0) {
       if(!n->exitSouth.empty()) {
-        mvprintw_center(south_exit.row, south_exit.col, n->exitSouth);
-      }
-      else {
-          mvprintw(south_exit.row, south_exit.col, "X");
+        mvprintw_center(south_exit.row, south_exit.col, "South");
       }
     }
     else if(strcmp(location.c_str(), "exitWest") == 0) {
       if(!n->exitWest.empty()) {
-        mvprintw_center(west_exit.row, west_exit.col, n->exitWest);
-      }
-      else {
-          mvprintw(west_exit.row, west_exit.col, "X");
+        mvprintw_center(west_exit.row, west_exit.col, "West");
       }
     }
     else {
@@ -74,10 +87,7 @@ void print_current_room(Node * n) {
       // shift the COL location to have enough room for the string, so it doesn't wrap a line
       if(!n->exitEast.empty()) {
         int calc_cols = COLS - static_cast<int>(n->exitEast.size()) - 1;
-        mvprintw_center(east_exit.row, calc_cols, n->exitEast);
-      }
-      else {
-          mvprintw(east_exit.row, east_exit.col, "X");
+        mvprintw_center(east_exit.row, calc_cols, "East");
       }
     }
   }
@@ -114,17 +124,21 @@ void mvprintw_center(int row, int col, std::string msg) {
 std::string suggest(std::string input, Node * n) {
   std::vector<string> rc = {};
 
-  if(!n->exitNorth.empty() && n->exitNorth.find(input) != std::string::npos){
-    rc.push_back(n->exitNorth);
+  std::string nt = "Go North";
+  std::string st = "Go South";
+  std::string et = "Go East";
+  std::string wt = "Go West";
+  if(!n->exitNorth.empty() &&  nt.find(input) != std::string::npos){
+    rc.push_back("Go North");
   }
-  if(!n->exitSouth.empty() && n->exitSouth.find(input) != std::string::npos){
-    rc.push_back(n->exitSouth);
+  if(!n->exitSouth.empty() &&  st.find(input) != std::string::npos){
+    rc.push_back("Go South");
   }
-  if(!n->exitEast.empty() && n->exitEast.find(input) != std::string::npos){
-    rc.push_back(n->exitEast);
+  if(!n->exitEast.empty() &&  et.find(input) != std::string::npos){
+    rc.push_back("Go East");
   }
-  if(!n->exitWest.empty() && n->exitWest.find(input) != std::string::npos){
-    rc.push_back(n->exitWest);
+  if(!n->exitWest.empty() && wt.find(input) != std::string::npos){
+    rc.push_back("Go West");
   }
 
   std::ostringstream oss;
@@ -144,39 +158,8 @@ std::string suggest(std::string input, Node * n) {
 }
 
 int main(void) {
-    std::ifstream ifs("script.json");
-
-    // Reader is deprecated, we are supposed to use a CharReaderBuilder and streams instead
-    // Which is newer better practice, but it works so fuck it
-    Json::Reader reader;
-    Json::Value obj;
-    reader.parse(ifs, obj); // reader can also read strings
-
-    // Create an empty unordered_map and
-    std::unordered_map<std::string, Node> nodeMap;
-    Node n;
-
-    for(Json::Value::iterator i = obj.begin(); i !=obj.end(); ++i){
-        Json::Value key = i.key();
-        Json::Value value = (*i);
-
-        n.enterDescription = value["enterDescription"].asString();
-        n.title = value["title"].asString();
-        n.enemy = value["enemy"].asString();
-        n.exitNorth = value["exitNorth"].asString();
-        n.exitSouth = value["exitSouth"].asString();
-        n.exitEast = value["exitEast"].asString();
-        n.exitWest = value["exitWest"].asString();
-        n.onEnter = value["onEnter"].asString();
-        n.onLeave = value["onLeave"].asString();
-        n.extra1 = value["extra1"].asString();
-        n.extra2 = value["extra2"].asString();
-        n.extra3 = value["extra3"].asString();
-
-        std::string stringKey = key.asString();
-        nodeMap[stringKey] = n;
-    }
-
+  GameState gameState;
+  gameState.createNodeMap();
   WINDOW * mainwin;
   /*  Initialize ncurses  */
 
@@ -229,10 +212,10 @@ int main(void) {
   if ( has_colors() && COLOR_PAIRS >= 13 ) {
     //overwrite colors with new rgb codes
     init_color(COLOR_BLACK, 570, 620, 700);
-    init_color(COLOR_BLUE, 0, 173, 181);
+    init_color(COLOR_CYAN, 0, 173, 181);
 
     //set new pair: id, foreground, background
-    init_pair(1,  COLOR_BLUE, COLOR_BLACK);
+    init_pair(1,  COLOR_CYAN, COLOR_BLACK);
 
     color_set(1, NULL);
     wbkgd(mainwin, COLOR_PAIR(1));
@@ -243,15 +226,14 @@ int main(void) {
     char mesg[]="> ";
     std::string input = "";
 
-    auto it = nodeMap.find("insideChurch");
+    auto it = gameState.getNodeMap().find("insideChurch");
 
-    if(it == nodeMap.end()) {
-      printf("%s\n", "Error reading nodeMap, no starting point 'insideChurch' found");
+    if(it == gameState.getNodeMap().end()) {
+      printf("%s\n", "Error reading gameState.getNodeMap(), no starting point 'insideChurch' found");
       exit(1);
     }
 
-    // re-use Node n from above
-    // set starting node using above method
+    Node n;
     n = it->second;
 
     bool new_location = true;
@@ -317,10 +299,36 @@ int main(void) {
         }
         //trim all the new lines that somehow get added
         input.erase(std::remove(input.begin(), input.end(), '\n'), input.end());
+        size_t spacePos = input.find(' ');
+        if(spacePos != std::string::npos){
+            auto first_token = input.substr(0, spacePos);
+            auto second_token = input.substr(spacePos+1, std::string::npos);
 
-        it = nodeMap.find(input);
+            std::transform(first_token.begin(), first_token.end(), first_token.begin(), ::tolower);
+            std::transform(second_token.begin(), second_token.end(), second_token.begin(), ::tolower);
+            if(first_token.compare("go") == 0){
+                std::string next =  getNextNode(second_token, &n);
+                if(!(next.compare("invalid") == 0))
+                    it = gameState.getNodeMap().find(next);
+            }
+            else if(first_token.compare("take") == 0){
+               //if(objectExistsInRoom(second_token, &n))
 
-        if(it != nodeMap.end()){
+            }
+            else if(first_token.compare("drop") == 0){
+
+            }
+            else if(first_token.compare("use") == 0){
+
+            }
+            else if(first_token.compare("search") == 0){
+
+            }
+
+        }
+
+
+        if(it != gameState.getNodeMap().end()){
           // valid location entered, call onLeave() function
           // onLeave();
           n = it->second;

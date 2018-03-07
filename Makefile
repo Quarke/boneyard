@@ -1,16 +1,16 @@
 CPP= g++
 CPPFLAGS= -std=c++11 -stdlib=libc++ -Weverything -Wno-c++98-compat
 LINKS= -lncurses -ljsoncpp
-OBJ= ncurses.o node.o
-CHARACTER_SHIT= character.o bag.o feet.o hand.o
+OBJ= ncurses.o node.o gamestate.o
+GAMESTATE_SHIT= gamestate.o
 
-CHARACTER_SHIT= character_test.o character.o bag.o
+GAMESTATE_SHIT= gamestate_test.o gamestate.o
 BAG_SHIT= bag_test.o bag.o
 ENEMY_SHIT= enemy_test.o enemy.o
 
 all: boneyard
 
-character: $(CHARACTER_SHIT)
+gamestate: $(GAMESTATE_SHIT)
 	$(CPP) $(CPPFLAGS) $^ -o $@
 
 bag: $(BAG_SHIT)
@@ -26,4 +26,4 @@ boneyard: $(OBJ)
 	$(CPP) -c $(CPPFLAGS) -o $@ $<
 
 clean:
-	rm character boneyard bag enemy *.o
+	rm GAMESTATE boneyard bag enemy *.o

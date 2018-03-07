@@ -27,6 +27,9 @@ class Node {
 
         Node();
 
+        // Need for "take", "drop" commands
+        int removeObject(std::string);
+  //      int addObject(std::string);
 
         void print();
 };
