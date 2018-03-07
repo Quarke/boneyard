@@ -8,27 +8,16 @@ private:
   std::string name;
 
   int health_CURRENT;
-<<<<<<< HEAD
   int damage_person; 
   int damage_self; 
   int health_MAX;   
-=======
-  int damage_person;
-  int damage_self;
-  int health_MAX;
->>>>>>> f9e8367d1207e1c310975fba233f9b8e1357a8f5
 
 public:
   Enemy(const std::string name, int pdamage, int sdamage, int chealth, int mhealth);
 
   std::string getName();
-<<<<<<< HEAD
+  int getPersonDamage(); 
   int getSelfDamage();
-  int getPersonDamage();
-=======
-  int getDamage_Self();
-  int getDamage_Person();
->>>>>>> f9e8367d1207e1c310975fba233f9b8e1357a8f5
   int getMaxHealth();
   int getCurrentHealth();
 
