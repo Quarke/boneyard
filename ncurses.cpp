@@ -146,8 +146,7 @@ std::string suggest(std::string input, Node * n) {
   if (!rc.empty())
   {
     // Convert all but the last element to avoid a trailing ","
-    std::copy(rc.begin(), rc.end()-1,
-        std::ostream_iterator<string>(oss, ", "));
+    std::copy(rc.begin(), rc.end()-1, std::ostream_iterator<string>(oss, ", "));
 
     // Now add the last element with no delimiter
     oss << rc.back();
@@ -243,6 +242,7 @@ int main(void) {
         clear();
         if(new_location){
           new_location = false;
+
           //Call the onEnter() function, whatever that does
           //onEnter();
         }
