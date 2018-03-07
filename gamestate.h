@@ -18,6 +18,7 @@ private:
   int maxItems;
   std::set<std::string> items;
   std::unordered_map<std::string, Node> nodeMap;
+  std::unordered_map<std::string, int> weapons;
 
 public:
   GameState();
