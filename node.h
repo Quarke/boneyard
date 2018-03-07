@@ -17,18 +17,20 @@ class Node {
         std::string onEnter;
         std::string onLeave;
 
-        std::string extra1;
-        std::string extra2;
-        std::string extra3;
+        std::vector<std::string> searchables;
+        std::vector<std::string> findables;
+        std::vector<std::string> searchText;
 
         Node(std::string, std::string, std::string, std::string,
                 std::string, std::string, std::string, std::string,
-                std::string, std::string, std::string, std::string, std::vector<std::string>);
+                std::string, std::vector<std::string>, std::vector<std::string>,
+                std::vector<std::string>, std::vector<std::string>);
 
         Node();
 
         // Need for "take", "drop" commands
         int objectExists(std::string);
+        int searchableExists(std::string);
         void addObject(std::string);
 
         void print();

@@ -111,10 +111,10 @@ void GameState::createNodeMap(){
   reader.parse(ifs, obj); // reader can also read strings
 
   // Create an empty unordered_map and
-  Node n;
   GameState gameState;
 
   for(Json::Value::iterator i = obj.begin(); i !=obj.end(); ++i){
+      Node n;
       Json::Value key = i.key();
       Json::Value value = (*i);
 
@@ -127,12 +127,18 @@ void GameState::createNodeMap(){
       n.exitWest = value["exitWest"].asString();
       n.onEnter = value["onEnter"].asString();
       n.onLeave = value["onLeave"].asString();
-      n.extra1 = value["extra1"].asString();
-      n.extra2 = value["extra2"].asString();
-      n.extra3 = value["extra3"].asString();
 
       for(auto itr : value["object"]){
           n.objects.push_back(itr.asString());
+      }
+      for(auto itr : value["searchables"]){
+          n.searchables.push_back(itr.asString());
+      }
+      for(auto itr : value["findables"]){
+          n.findables.push_back(itr.asString());
+      }
+      for(auto itr : value["searchText"]){
+          n.searchText.push_back(itr.asString());
       }
 
       std::string stringKey = key.asString();
@@ -180,9 +186,10 @@ int GameState::addItem(std::string item){
 
 int GameState::removeItem(std::string item){
     auto it = items.find(item);
-    items.erase(it);
-    if(it != items.end())
+    if(it != items.end()) {
+        items.erase(it);
         return 0;
+    }
     else
         return -1;
 }
@@ -193,4 +200,3 @@ void GameState:: clearItems(){
 void GameState::print() {
    std::cout << name << ", " << equipped << std::endl;
 }
-

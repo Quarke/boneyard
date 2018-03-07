@@ -5,11 +5,11 @@
 Node::Node(){}
 
 Node::Node(std::string ttl, std::string enterDesc, std::string nme, std::string en, std::string es,
-        std::string ee, std::string ew, std::string one, std::string onl, std::string e1,
-        std::string e2, std::string e3, std::vector<std::string> objs) {
+        std::string ee, std::string ew, std::string one, std::string onl, std::vector<std::string> search,
+        std::vector<std::string> find, std::vector<std::string> searchT, std::vector<std::string> objs) {
 
     this->title = ttl;
-    this->enterDescription = enterDesc;;
+    this->enterDescription = enterDesc;
     this->enemy = nme;
     this->exitNorth = en;
     this->exitSouth = es;
@@ -17,9 +17,9 @@ Node::Node(std::string ttl, std::string enterDesc, std::string nme, std::string 
     this->exitWest = ew;
     this->onEnter = one;
     this->onLeave = onl;
-    this->extra1 = e1;
-    this->extra2 = e2;
-    this->extra3 = e3;
+    this->searchables = search;
+    this->findables = find;
+    this->searchText = searchT;
     this->objects = objs;
 }
 
@@ -29,6 +29,20 @@ int Node::objectExists(std::string obj){
         return 0;
     else
         return -1;
+}
+
+int Node::searchableExists(std::string search){
+    auto it = find(searchables.begin(), searchables.end(), search);
+    if(it != searchables.end())
+        return 0;
+    else
+        return -1;
+    // int loc = -1;
+    // for(int i = 0; i < searchables.size(); i++){
+    //     if(searchables[i].compare(search) == 0)
+    //         loc = i;
+    // }
+    // return loc;
 }
 
 void Node::addObject(std::string obj){

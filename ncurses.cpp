@@ -40,6 +40,8 @@ void print_current_room(Node * n) {
 
   //print the description just below it
   mvprintw_center(5, COLS/2, n->enterDescription);
+  fprintf(stderr, "hi there\n");
+  fprintf(stderr, "%s\n", n->enterDescription.c_str());
 
   //print the exit
   std::vector<string> locations = {"exitNorth", "exitSouth", "exitEast", "exitWest"};
@@ -217,20 +219,11 @@ int main(void) {
     Node n;
     n = it->second;
 
-    bool new_location = true;
-
+    std::string newInfo;
     // Here is the main loopiness, clear -> print current info -> expose prompt -> interpret action -> move|stay -> loop
     do{
         clear();
-        if(new_location){
-          new_location = false;
-
-          //Call the onEnter() function, whatever that does
-          //onEnter();
-        }
-
-        // echo previous input to user
-        mvprintw(LINES/2 + 5, COLS/2 - 20, input.c_str());
+        mvprintw(LINES/2 + 5, COLS/2 - 20, newInfo.c_str());
 
         //print information about current room
         print_current_room(&n);
@@ -292,9 +285,13 @@ int main(void) {
             std::transform(second_token.begin(), second_token.end(), second_token.begin(), ::tolower);
             if(first_token.compare("go") == 0){
                 std::string next =  gameState.getNextNode(second_token, &n);
-                if(!(next.compare("invalid") == 0)){
+                if(!(next.compare("invalid") == 0 || next.compare("") == 0)){
                     it = gameState.getNodeMap().find(next);
                     fail_flag = 0;
+                    n = it->second;
+                    newInfo = input;
+                } else {
+                    newInfo = "You can't go "+second_token;
                 }
             }
             else if(first_token.compare("take") == 0){
@@ -302,6 +299,9 @@ int main(void) {
                 if(objectFound == 0){
                     gameState.addItem(second_token);
                     fail_flag = 0;
+                    newInfo = "You took "+second_token;
+                } else {
+                    newInfo = "You can't take "+second_token;
                 }
             }
             else if(first_token.compare("drop") == 0){
@@ -309,6 +309,9 @@ int main(void) {
                 if(itemFound == 0){
                     n.addObject(second_token);
                     fail_flag = 0;
+                    newInfo = "You dropped "+second_token;
+                }else {
+                    newInfo = "You can't drop "+second_token;
                 }
             }
             else if(first_token.compare("use") == 0){
@@ -316,22 +319,35 @@ int main(void) {
                 if(itemToEquip.compare("invalid") != 0){    // This just sets Equipped, it doesn't do anything with it
                     gameState.setEquipped(second_token);
                     fail_flag = 0;
+                    newInfo = "You used "+second_token;
+                } else {
+                    newInfo = "You can't use "+second_token;
                 }
             }
             else if(first_token.compare("search") == 0){
-
+                int loc = n.searchableExists(second_token);
+                newInfo = std::to_string(loc);
+                if(loc != -1){
+                    if(n.findables.size() > 0) {
+                        n.objects.push_back(n.findables[loc]);
+                    }
+                    newInfo = n.searchText[loc];
+                } else {
+                    newInfo = "You can't search "+second_token;
+                }
             }
 
+        } else if (input.compare("options") == 0) {
+            newInfo = "You can say 'Go', 'Take', 'Drop', 'Use', 'Search', 'Inventory', and 'Options'";
+        } else if (input.compare("inventory") == 0) {
+            std::set<std::string> items = gameState.getItems();
+            if(!items.empty()) {
+                for(std::string s: items)
+                    newInfo = newInfo + s + " ";
+            } else {
+                newInfo = "You have nothing in your inventory";
+            }
         }
-
-
-        if(it != gameState.getNodeMap().end()){
-          // valid location entered, call onLeave() function
-          // onLeave();
-          n = it->second;
-          new_location = true;
-        }
-
     } while( input.compare("quit") != 0 );
 
   /*  Clean up after ourselves  */

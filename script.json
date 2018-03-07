@@ -20,7 +20,7 @@
         "exitSouth": "",
         "exitEast": "insideChurch",
         "exitWest": "",
-        "title": "",
+        "title": "Priest's Office",
         "object": [ "newspaper" ],
         "enemy": "",
         "searchables": [],
