@@ -23,13 +23,16 @@ Node::Node(std::string ttl, std::string enterDesc, std::string nme, std::string 
     this->objects = objs;
 }
 
-int Node::removeObject(std::string obj){
-    for(size_t i=0; i < objects.size(); i++)
-    if (objects.at(i).compare(obj) == 0){
-        objects.erase(objects.begin() + i);
+int Node::objectExists(std::string obj){
+    auto it = find(objects.begin(), objects.end(), obj);
+    if(it != objects.end())
         return 0;
-    }
-    return 1;
+    else
+        return -1;
+}
+
+void Node::addObject(std::string obj){
+    objects.push_back(obj);
 }
 /*
 int addObject(std::string obj){

@@ -3,54 +3,46 @@
 #include "enemy.h"
 #include <iostream>
 
-using namespace std;
+Enemy::Enemy(){}
 
-Enemy::Enemy(string n, int chealth, int mhealth, int pdamage, int sdamage) {
+Enemy::Enemy(std::string n, int chealth, int mhealth, int pdamage) {
    name = n;
-   health_CURRENT = chealth; 
-   health_MAX = mhealth; 
-   damage_self = sdamage; 
+   health_current = chealth; 
+   health_max = mhealth; 
    damage_person = pdamage; 
 }
 
-string Enemy::getName() {
+std::string Enemy::getName() {
    return name;
 }
 
 int Enemy::getCurrentHealth() {
-   return health_CURRENT;
+   return health_current;
 }
 
 int Enemy::getMaxHealth() {
-  return health_MAX; 
+  return health_max; 
 }
 
 int Enemy::getPersonDamage() {
   return damage_person; 
 }
 
-int Enemy::getSelfDamage() {
-  return damage_self; 
-}
-
-void Enemy::setName(string new_name) {
+void Enemy::setName(std::string new_name) {
    name = new_name;
 }
 
 void Enemy::setMaxHealth(int new_maxhealth) {
-    health_MAX = new_maxhealth; 
+    health_max = new_maxhealth; 
 }
 void Enemy::setCurrentHealth(int new_currenthealth) {
-    health_CURRENT = new_currenthealth; 
+    health_current = new_currenthealth; 
 }
 void Enemy::setPersonDamage(int new_persondamage) {
     damage_person = new_persondamage; 
 }
-void Enemy::setSelfDamage(int new_selfdamage) {
-    damage_self = new_selfdamage; 
-}
 
 // print in the format ""Bag-name" by author-name (gender) at email"
 void Enemy::print() const {
-   cout << name << ", " << health_MAX << ", " << health_CURRENT << ", " << damage_person << ", " << damage_self << endl;
+   std::cout << name << ", " << health_max << ", " << health_current << ", " << damage_person << std::endl;
 }

@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "node.h"
+#include "enemy.h"
 
 class GameState {
 private:
@@ -18,7 +19,12 @@ private:
   int maxItems;
   std::set<std::string> items;
   std::unordered_map<std::string, Node> nodeMap;
-  std::unordered_map<std::string, int> weapons;
+  std::unordered_map<std::string, Enemy> enemies;
+  std::unordered_map<std::string, long> weapons;
+
+  // Reader is deprecated, we are supposed to use a CharReaderBuilder and streams instead
+  // Which is newer better practice, but it works so fuck it
+  Json::Reader reader;
 
 public:
   GameState();
@@ -32,8 +38,8 @@ public:
   std::string getItem(std::string item);
   std::unordered_map<std::string, Node> getNodeMap();
   std::string getNextNode(std::string, Node * n);
-  std::unordered_map<std::string, int> getWeapons();
-  int getWeapon(std::string);
+  std::unordered_map<std::string, long> getWeapons();
+  long getWeapon(std::string);
   //Setters
   void setName(const std::string n);
   void setEquipped(const std::string e);
@@ -41,12 +47,11 @@ public:
   void setMaxItems(int max);
 
   void createNodeMap();
-  //void createEnemyMap();
-  //void weaponMap();
+  void createEnemyMap();
 
   // Modifiers
-  void addItem(std::string item);
-  void removeItem(std::string item);
+  int addItem(std::string item);
+  int removeItem(std::string item);
 
   bool hasItem(std::string item);
   void clearItems();

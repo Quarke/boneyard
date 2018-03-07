@@ -102,6 +102,7 @@ void mvprintw_center(int row, int col, std::string msg) {
   }
 }
 
+// NOTE: change this to (string input, vector<string> stringsToCheck)
 std::string suggest(std::string input, Node * n) {
   std::vector<string> rc = {};
 
@@ -278,6 +279,8 @@ int main(void) {
                     break;
             }
         }
+        // trigger for invalid command
+        int fail_flag = -1;
         //trim all the new lines that somehow get added
         input.erase(std::remove(input.begin(), input.end(), '\n'), input.end());
         size_t spacePos = input.find(' ');
@@ -289,18 +292,31 @@ int main(void) {
             std::transform(second_token.begin(), second_token.end(), second_token.begin(), ::tolower);
             if(first_token.compare("go") == 0){
                 std::string next =  gameState.getNextNode(second_token, &n);
-                if(!(next.compare("invalid") == 0))
+                if(!(next.compare("invalid") == 0)){
                     it = gameState.getNodeMap().find(next);
+                    fail_flag = 0;
+                }
             }
             else if(first_token.compare("take") == 0){
-               //if(objectExistsInRoom(second_token, &n))
-
+                int objectFound = n.objectExists(second_token);
+                if(objectFound == 0){
+                    gameState.addItem(second_token);
+                    fail_flag = 0;
+                }
             }
             else if(first_token.compare("drop") == 0){
-
+                int itemFound = gameState.removeItem(second_token);
+                if(itemFound == 0){
+                    n.addObject(second_token);
+                    fail_flag = 0;
+                }
             }
             else if(first_token.compare("use") == 0){
-
+                std::string itemToEquip = gameState.getItem(second_token);
+                if(itemToEquip.compare("invalid") != 0){    // This just sets Equipped, it doesn't do anything with it
+                    gameState.setEquipped(second_token);
+                    fail_flag = 0;
+                }
             }
             else if(first_token.compare("search") == 0){
 

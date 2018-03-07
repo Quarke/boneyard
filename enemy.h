@@ -4,19 +4,15 @@
 #include <string>
 
 class Enemy{
-private:
-  std::string name;
-
-  int health_CURRENT;
-  int damage_person; 
-  int damage_self; 
-  int health_MAX;   
-
 public:
-  Enemy(const std::string name, int pdamage, int sdamage, int chealth, int mhealth);
+  Enemy();
+  Enemy(const std::string name, int pdamage, int chealth, int mhealth);
+
+  std::string name;
+  int health_current, health_max, damage_person;
 
   std::string getName();
-  int getPersonDamage(); 
+  int getPersonDamage();
   int getSelfDamage();
   int getMaxHealth();
   int getCurrentHealth();
@@ -24,7 +20,6 @@ public:
   void setName(const std::string name);
   void setCurrentHealth(int c_health);
   void setMaxHealth(int m_health);
-  void setSelfDamage(int s_damage);
   void setPersonDamage(int p_damage);
 
   void print() const;
