@@ -11,6 +11,17 @@ GameState::GameState() {
    equipped = "";
    hp = 100;
    maxItems = 1;
+
+   weapons["letter opener"] = 1;
+   weapons["flashlight"] = 1;
+   weapons["whiskey"] = 1;
+   weapons["pistol"] = 3;
+   weapons["shotgun"] = 4;
+   weapons["bolt action rifle"] = 5;
+   weapons["shiv"] = 2;
+   weapons["pillow"] = 6;
+   weapons["instruments"] = 2;
+   weapons["hammer"] = 2;
 }
 
 // Getters
@@ -44,7 +55,19 @@ std::string GameState::getItem(std::string item){
 
 std::unordered_map<std::string, Node> GameState::getNodeMap(){
   return nodeMap;
+}
 
+std::unordered_map<std::string, int> GameState::getWeapons(){
+    return weapons;
+}
+
+int GameState::getWeapon(std::string w){
+    auto it = weapons.find(w);
+    if(it != weapons.end()){
+        //valid weapon
+        return it->second;
+    }
+    return 0;
 }
 
 std::string GameState::getNextNode(std::string direction, Node * n){
