@@ -39,9 +39,7 @@ void print_current_room(Node * n) {
   mvprintw_center(3, COLS/2, n->title);
 
   //print the description just below it
-  mvprintw_center(5, COLS/2, n->enterDescription);
-  fprintf(stderr, "hi there\n");
-  fprintf(stderr, "%s\n", n->enterDescription.c_str());
+  mvprintw_center(5, COLS/2, n->desc);
 
   //print the exit
   std::vector<string> locations = {"exitNorth", "exitSouth", "exitEast", "exitWest"};
@@ -141,8 +139,6 @@ std::string suggest(std::string input, Node * n) {
 }
 
 int main(void) {
-  GameState gameState;
-  gameState.createNodeMap();
   WINDOW * mainwin;
   /*  Initialize ncurses  */
 
@@ -206,23 +202,27 @@ int main(void) {
 
     refresh();
 
+    //initialize gamestate
+    GameState gameState;
+    gameState.createNodeMap();
+    gameState.createEnemyMap();
+
     char mesg[]="> ";
     std::string input = "";
 
-    auto it = gameState.getNodeMap().find("insideChurch");
-
-    if(it == gameState.getNodeMap().end()) {
-      printf("%s\n", "Error reading gameState.getNodeMap(), no starting point 'insideChurch' found");
-      exit(1);
-    }
-
     Node n;
-    n = it->second;
+    n = gameState.getNodeMap().at("insideChurch");
+
+    // if( gameState.nodeExists("insideChurch") ) {
+    //   printf("%s\n", "Error reading gameState.getNodeMap(), no starting point 'insideChurch' found");
+    //   exit(1);
+    // }
 
     std::string newInfo;
     // Here is the main loopiness, clear -> print current info -> expose prompt -> interpret action -> move|stay -> loop
     do{
         clear();
+        auto it = gameState.getNodeMap().begin();
         mvprintw(LINES/2 + 5, COLS/2 - 20, newInfo.c_str());
 
         //print information about current room
@@ -235,7 +235,7 @@ int main(void) {
         cout << input << endl;
 
         char c = 0;
-        input = "";
+        //input = "";
         int x, y;
         std::string rc = "";
         while (c != '\n') {
@@ -272,30 +272,30 @@ int main(void) {
                     break;
             }
         }
-
         //trim all the new lines that somehow get added
         input.erase(std::remove(input.begin(), input.end(), '\n'), input.end());
+
         size_t spacePos = input.find(' ');
-        if(spacePos != std::string::npos){
+        if(spacePos != std::string::npos) {
             auto first_token = input.substr(0, spacePos);
             auto second_token = input.substr(spacePos+1, std::string::npos);
 
             std::transform(first_token.begin(), first_token.end(), first_token.begin(), ::tolower);
             std::transform(second_token.begin(), second_token.end(), second_token.begin(), ::tolower);
+
             if(first_token.compare("go") == 0){
-                std::string next =  gameState.getNextNode(second_token, &n);
-                if(!(next.compare("invalid") == 0 || next.compare("") == 0)){
-                    it = gameState.getNodeMap().find(next);
-                    n = it->second;
+                if(gameState.checkNextNode(second_token, &n)){
+                    n = * gameState.getNextNode(second_token, &n);
                     newInfo = input;
+                    input = "";
                 } else {
-                    newInfo = "You can't go "+second_token;
+                    newInfo = "You can't go " + second_token;
                 }
             }
             else if(first_token.compare("take") == 0){
-                bool objectFound = n.objectExists(second_token);
-                if(objectFound){
-                    gameState.addItem(second_token);
+                int objectFound = n.objectExists(second_token);
+                if(objectFound == 0){
+                    gameState.getItemSet().insert(second_token);
                     newInfo = "You took "+second_token;
                 } else {
                     newInfo = "You can't take "+second_token;
@@ -305,9 +305,9 @@ int main(void) {
                 int itemFound = gameState.removeItem(second_token);
                 if(itemFound == 0){
                     n.addObject(second_token);
-                    newInfo = "You dropped "+second_token;
+                    newInfo = "You dropped " + second_token;
                 }else {
-                    newInfo = "You can't drop "+second_token;
+                    newInfo = "You can't drop " + second_token;
                 }
             }
             else if(first_token.compare("use") == 0){
@@ -321,6 +321,7 @@ int main(void) {
             }
             else if(first_token.compare("search") == 0){
                 int loc = n.getSearchableIndex(second_token);
+                newInfo = std::to_string(loc);
                 if(loc != -1){
                     if(n.findables.size() > 0) {
                         n.objects.push_back(n.findables[loc]);
@@ -329,12 +330,15 @@ int main(void) {
                 } else {
                     newInfo = "You can't search "+second_token;
                 }
+            } else {
+              input = "";
+              newInfo = "";
             }
 
         } else if (input.compare("options") == 0) {
             newInfo = "You can say 'Go', 'Take', 'Drop', 'Use', 'Search', 'Inventory', and 'Options'";
         } else if (input.compare("inventory") == 0) {
-            std::set<std::string> items = gameState.getItems();
+            std::set<std::string> items = gameState.getItemSet();
             if(!items.empty()) {
                 for(std::string s: items)
                     newInfo = newInfo + s + " ";

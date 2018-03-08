@@ -9,7 +9,7 @@ Node::Node(std::string ttl, std::string enterDesc, std::string nme, std::string 
         std::vector<std::string> find, std::vector<std::string> searchT, std::vector<std::string> objs) {
 
     title = ttl;
-    enterDescription = enterDesc;
+    desc = enterDesc;
     enemy = nme;
     exitNorth = en;
     exitSouth = es;
@@ -45,5 +45,9 @@ void Node::addObject(std::string obj){
 }
 
 void Node::print(){
-  std::cout << title << ", " << enterDescription << ", " << enemy << std::endl;
+  std::cout << desc << std::endl;
+}
+
+std::string Node::getDescription() {
+  return desc;
 }

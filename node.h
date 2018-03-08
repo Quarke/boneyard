@@ -4,7 +4,7 @@
 class Node {
     public:
         std::string title;
-        std::string enterDescription;
+        std::string desc;
 
         std::string enemy;
         std::vector<std::string> objects;
@@ -32,6 +32,8 @@ class Node {
         bool objectExists(std::string);
         int getSearchableIndex(std::string);
         void addObject(std::string);
+
+        std::string getDescription();
 
         void print();
 };

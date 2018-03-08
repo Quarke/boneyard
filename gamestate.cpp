@@ -22,25 +22,175 @@ GameState::GameState() {
    weapons["hammer"] = 2;
 }
 
-// Getters
-std::string GameState::getName() {
-   return name;
+void GameState::createNodeMap(){
+  std::ifstream ifs("script.json", std::ifstream::binary);
+
+  Json::CharReaderBuilder builder;
+
+  Json::CharReader * reader = builder.newCharReader();
+
+  Json::Value root;
+  std::string errors;
+
+  bool parsingSuccessful = Json::parseFromStream(builder, ifs, &root, &errors);
+  delete reader;
+
+  if ( !parsingSuccessful )
+  {
+    std::cout << errors << std::endl;
+  }
+
+  for( Json::Value::const_iterator outer = root.begin() ; outer != root.end() ; outer++ )
+  {
+      Node n;
+
+      n.title = outer->get("title", "").asString();
+      n.enemy = outer->get("enemy", "").asString();
+      n.exitNorth = outer->get("exitNorth", "").asString();
+      n.exitSouth = outer->get("exitSouth", "").asString();
+      n.exitEast = outer->get("exitEast", "").asString();
+      n.exitWest = outer->get("exitWest", "").asString();
+      n.onEnter = outer->get("onEnter", "").asString();
+      n.onLeave = outer->get("onLeave", "").asString();
+      n.desc = outer->get("desc", "").asString();
+
+      for(auto itr : outer->get("object", "")){
+          n.objects.push_back(itr.asString());
+      }
+      for(auto itr : outer->get("searchables", "")){
+          n.searchables.push_back(itr.asString());
+      }
+      for(auto itr : outer->get("findables", "")){
+          n.findables.push_back(itr.asString());
+      }
+      for(auto itr : outer->get("searchText", "")) {
+          n.searchText.push_back(itr.asString());
+      }
+
+      std::string stringKey = outer.key().asString();
+      //std::cout << stringKey.c_str() << std::endl;
+      std::pair<std::string, Node> p (stringKey, n);
+      nodeMap.insert(p);
+  }
 }
 
-std::string GameState::getEquipped() {
-   return equipped;
+void GameState::createEnemyMap() {
+  std::ifstream ifs("enemy.json", std::ifstream::binary);
+
+  Json::CharReaderBuilder builder;
+
+  Json::CharReader * reader = builder.newCharReader();
+
+  Json::Value root;
+  std::string errors;
+
+  bool parsingSuccessful = Json::parseFromStream(builder, ifs, &root, &errors);
+  delete reader;
+
+  if ( !parsingSuccessful )
+  {
+    std::cout << errors << std::endl;
+  }
+
+  for( Json::Value::const_iterator outer = root.begin() ; outer != root.end() ; outer++ )
+  {
+      Enemy e;
+
+      e.name = outer->get("name", "").asString();
+
+      e.health_current = outer->get("health_current", "").asInt();
+      e.health_max = outer->get("health_max", "").asInt();
+      e.damage_person = outer->get("damage_person", "").asInt();
+
+      std::string stringKey = outer.key().asString();
+
+      enemies[stringKey] = e;
+  }
 }
 
-int GameState::getHp(){
-    return hp;
+Node * GameState::getNextNode(std::string input, Node * n) {
+  //input should be one of: north, south, east, west
+  std::string rc;
+  if( input.compare("north") == 0 ) {
+    rc = n->exitNorth;
+  }
+  else if( input.compare("south") == 0 ) {
+    rc = n->exitSouth;
+  }
+  else if( input.compare("east") == 0 ) {
+    rc = n->exitEast;
+  }
+  else if( input.compare("west") == 0 ) {
+    rc = n->exitWest;
+  }
+
+  if(rc.empty()) {
+    return nullptr;
+  }
+
+  auto it = nodeMap.find(rc);
+  if(it != nodeMap.end()){
+    return &(it->second);
+  }
+  else {
+    return nullptr;
+  }
 }
 
-int GameState::getMaxItems(){
-    return maxItems;
+
+bool GameState::checkNextNode(std::string input, Node * n) {
+  //input should be one of: north, south, east, west
+  std::string rc;
+  if( input.compare("north") == 0 ) {
+    rc = n->exitNorth;
+  }
+  else if( input.compare("south") == 0 ) {
+    rc = n->exitSouth;
+  }
+  else if( input.compare("east") == 0 ) {
+    rc = n->exitEast;
+  }
+  else if( input.compare("west") == 0 ) {
+    rc = n->exitWest;
+  }
+
+  if(rc.empty()) {
+    return false;
+  }
+  return true;
 }
 
-std::set<std::string> GameState::getItems(){
-    return items;
+bool GameState::removeItem(std::string item){
+    size_t rc = items.erase(item);
+    if(rc > 0){
+      return true;
+    }
+    return false;
+}
+
+std::unordered_map<std::string, Node> GameState::getNodeMap(){
+  return nodeMap;
+}
+
+std::set<std::string> GameState::getItemSet(){
+  return items;
+}
+
+Node * GameState::getNode(std::string input) {
+    auto it = nodeMap.find(input);
+    if(it != nodeMap.end()) {
+      return &(it->second);
+    }
+    return nullptr;
+}
+
+void GameState::addItem(std::string item){
+    if(items.size() < static_cast<unsigned long>(maxItems))
+        items.insert(item);
+}
+
+void GameState::setEquipped(std::string new_equipped) {
+   equipped = new_equipped;
 }
 
 std::string GameState::getItem(std::string item){
@@ -51,149 +201,9 @@ std::string GameState::getItem(std::string item){
     return "invalid";
 }
 
-std::unordered_map<std::string, Node> GameState::getNodeMap(){
-  return nodeMap;
-}
 
-std::unordered_map<std::string, long> GameState::getWeapons(){
-    return weapons;
-}
-
-long GameState::getWeapon(std::string w){
-    auto it = weapons.find(w);
-    if(it != weapons.end()){
-        //valid weapon
-        return it->second;
-    }
-    return 0;
-}
-
-std::string GameState::getNextNode(std::string direction, Node * n){
-  if(direction.compare("north") == 0){
-      return n->exitNorth;
-  }
-  else if(direction.compare("south") == 0){
-      return n->exitSouth;
-  }
-  else if(direction.compare("east") == 0){
-      return n->exitEast;
-  }
-  else if(direction.compare("west") == 0){
-      return n->exitWest;
-  }
-  else{
-      return "invalid";
-  }
-}
-// End Getters
-
-// Setters
-void GameState::setName(std::string new_name) {
-   name = new_name;
-}
-
-void GameState::setEquipped(std::string new_equipped) {
-   equipped = new_equipped;
-}
-
-void GameState::setHp(int new_hp){
-    hp = new_hp;
-}
-
-void GameState::setMaxItems(int new_max_items){
-    maxItems = new_max_items;
-}
-
-void GameState::createNodeMap(){
-  std::ifstream ifs("script.json");
-
-  Json::Value obj;
-  reader.parse(ifs, obj); // reader can also read strings
-
-  for(Json::Value::iterator i = obj.begin(); i !=obj.end(); ++i){
-      Node n;
-      Json::Value key = i.key();
-      Json::Value value = (*i);
-
-      n.enterDescription = value["enterDescription"].asString();
-      n.title = value["title"].asString();
-      n.enemy = value["enemy"].asString();
-      n.exitNorth = value["exitNorth"].asString();
-      n.exitSouth = value["exitSouth"].asString();
-      n.exitEast = value["exitEast"].asString();
-      n.exitWest = value["exitWest"].asString();
-      n.onEnter = value["onEnter"].asString();
-      n.onLeave = value["onLeave"].asString();
-
-      for(auto itr : value["object"]){
-          n.objects.push_back(itr.asString());
-      }
-      for(auto itr : value["searchables"]){
-          n.searchables.push_back(itr.asString());
-      }
-      for(auto itr : value["findables"]){
-          n.findables.push_back(itr.asString());
-      }
-      for(auto itr : value["searchText"]){
-          n.searchText.push_back(itr.asString());
-      }
-
-      std::string stringKey = key.asString();
-      nodeMap[stringKey] = n;
-  }
-
-}
-
-void GameState::createEnemyMap(){
-   std::ifstream ifs("enemy.json");
-
-  Json::Value obj;
-  reader.parse(ifs, obj); // reader can also read strings
-
-  // Create an empty unordered_map and
-  Enemy e;
-  for(Json::Value::iterator i = obj.begin(); i !=obj.end(); ++i){
-      Json::Value key = i.key();
-      Json::Value value = (*i);
-
-      e.name = value["name"].asString();
-      e.health_current = value["health_current`"].asInt();
-      e.health_max = value["health_max"].asInt();
-      e.damage_person = value["damage_person"].asInt();
-
-
-      std::string stringKey = key.asString();
-      enemies[stringKey] = e;
-  }
-}
-
-
-// End Setters
-
-
-// Modifiers
-
-int GameState::addItem(std::string item){
-    if(items.size() < static_cast<unsigned long>(maxItems)){
-        items.insert(item);
-        return 0;
-    }
-    return -1;
-}
-
-int GameState::removeItem(std::string item){
-    auto it = items.find(item);
-    if(it != items.end()) {
-        items.erase(it);
-        return 0;
-    }
-    else
-        return -1;
-}
-
-void GameState:: clearItems(){
-    items.clear();
-}
 void GameState::print() {
-   std::cout << name << ", " << equipped << std::endl;
+   for(auto it = nodeMap.begin(); it != nodeMap.end(); ++it) {
+     std::cout << it->first << it->second.desc << std::endl;
+   }
 }
