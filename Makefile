@@ -20,4 +20,4 @@ boneyard: $(OBJ)
 	$(CPP) -c $(CPPFLAGS) -o $@ $<
 
 clean:
-	rm gamestate boneyard bag enemy *.o
+	rm boneyard *.o
