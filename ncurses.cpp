@@ -272,8 +272,7 @@ int main(void) {
                     break;
             }
         }
-        // trigger for invalid command
-        int fail_flag = -1;
+
         //trim all the new lines that somehow get added
         input.erase(std::remove(input.begin(), input.end(), '\n'), input.end());
         size_t spacePos = input.find(' ');
@@ -287,7 +286,6 @@ int main(void) {
                 std::string next =  gameState.getNextNode(second_token, &n);
                 if(!(next.compare("invalid") == 0 || next.compare("") == 0)){
                     it = gameState.getNodeMap().find(next);
-                    fail_flag = 0;
                     n = it->second;
                     newInfo = input;
                 } else {
@@ -295,10 +293,9 @@ int main(void) {
                 }
             }
             else if(first_token.compare("take") == 0){
-                int objectFound = n.objectExists(second_token);
-                if(objectFound == 0){
+                bool objectFound = n.objectExists(second_token);
+                if(objectFound){
                     gameState.addItem(second_token);
-                    fail_flag = 0;
                     newInfo = "You took "+second_token;
                 } else {
                     newInfo = "You can't take "+second_token;
@@ -308,7 +305,6 @@ int main(void) {
                 int itemFound = gameState.removeItem(second_token);
                 if(itemFound == 0){
                     n.addObject(second_token);
-                    fail_flag = 0;
                     newInfo = "You dropped "+second_token;
                 }else {
                     newInfo = "You can't drop "+second_token;
@@ -318,15 +314,13 @@ int main(void) {
                 std::string itemToEquip = gameState.getItem(second_token);
                 if(itemToEquip.compare("invalid") != 0){    // This just sets Equipped, it doesn't do anything with it
                     gameState.setEquipped(second_token);
-                    fail_flag = 0;
                     newInfo = "You used "+second_token;
                 } else {
                     newInfo = "You can't use "+second_token;
                 }
             }
             else if(first_token.compare("search") == 0){
-                int loc = n.searchableExists(second_token);
-                newInfo = std::to_string(loc);
+                int loc = n.getSearchableIndex(second_token);
                 if(loc != -1){
                     if(n.findables.size() > 0) {
                         n.objects.push_back(n.findables[loc]);

@@ -29,8 +29,8 @@ class Node {
         Node();
 
         // Need for "take", "drop" commands
-        int objectExists(std::string);
-        int searchableExists(std::string);
+        bool objectExists(std::string);
+        int getSearchableIndex(std::string);
         void addObject(std::string);
 
         void print();
